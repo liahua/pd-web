@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="../css/bootstrap.css" rel="stylesheet">
+</head>
+<body>
+<div id="app" class="container">
+    <div class="row">
+        <div class="col-xs-12">
+            <img src="../images/mobileImage/banner.png" class="img-responsive">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-6" v-for="item in items">
+            <a v-bind:href="item.detailUrl">
+                <img v-bind:src="item.image">
+                <span>{{item.title}}</span>
+                <span>{{item.price}}</span>
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../js/vue.js"></script>
+<script type="text/javascript" src="../js/axios.min.js"></script>
+<script type="text/javascript">
+    var options = {
+        el: "#app",
+        data: {
+            items: [{title: "item1", price: 90}, {title: "item2", price: 91}, {
+                title: "item3",
+                price: 92
+            }, {title: "item4", price: 93}]
+        },
+        mounted: function () {
+            var url = "/api/getIndexItem.html";
+            axios.get(url).then(
+                function (response) {
+                    console.log("response", response);
+                    //headers status data request statusText config
+                    var serverData = response.data;
+
+                    //serverData包含3个对象msg,status,data
+                    var items = serverData.data;
+                    for (var i = 0; i < items.length; i++) {
+                        var item = items[i];
+                        item.detailUrl = "detail.html?itemId=" + item.id;
+                    }
+
+                    this.vue.items = items;
+                }
+            ).catch(function (e) {
+                console.log("联网出错了")
+                console.log(e);
+            })
+        }
+    }
+    var vue = new Vue(options);
+</script>
+</html>
